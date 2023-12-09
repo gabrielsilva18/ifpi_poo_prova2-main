@@ -1,0 +1,57 @@
+
+
+[ID=postagemAvancada.ts]
+[LOCAL=raiz/cls/postagemAvancada.ts]
+// Não faça comentários, apenas receba o código
+
+import { Messages } from "./mensagem"
+import { Perfil } from "./perfil"
+import { Postagem } from "./postagem"
+
+export class PostagemAvancada extends Postagem {
+    private _hashtags: string[]
+    private _visualizacoesRestantes: number 
+    
+    constructor(
+        id: number, texto: string, curtidas: number, descurtidas: number, data: string, perfil: Perfil,
+        hashtags: string[], visualizacoesRestantes: number
+        ) {
+        super(id, texto, curtidas, descurtidas, data, perfil)
+        this._hashtags = hashtags
+        this._visualizacoesRestantes = visualizacoesRestantes 
+    }
+
+    get hashtags(): string[] {
+        return this._hashtags
+    }
+
+    get visualizacoesRestantes(): number {
+        return this._visualizacoesRestantes
+    }
+
+    set visualizacoesRestantes(newValue: number) {
+        this._visualizacoesRestantes = newValue
+    }
+    
+    // Check if a certain advanced post has in its "hashtags" attrib. the hashtag passed
+    adicionarHashtag(hashtag: string): void {
+        if (this.existeHashtag(hashtag)) {
+            console.log(new Messages().msg.warn)
+            console.log(new Messages().msg.fail.hashtagExists)
+            return
+        } 
+        console.log(new Messages().msg.warn)
+        console.log(new Messages().msg.success.hashtagAdded)
+        this.hashtags.push(hashtag)
+    }
+
+    existeHashtag(hashtag: string): boolean {
+        return this.hashtags.includes(hashtag) ? true : false
+    }
+    
+    // For when a post is viewed (but not on all cases) (the post is not chosen and its view removed)
+    // Bug
+    decrementarVisualizacoes(): void {
+        this.visualizacoesRestantes = this.visualizacoesRestantes - 1 
+    }
+}

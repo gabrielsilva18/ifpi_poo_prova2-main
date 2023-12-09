@@ -1,0 +1,134 @@
+
+
+[ID=repositorioPostagens.ts]
+[LOCAL=raiz/cls/repositorioPostagens.ts]
+// Não faça comentários, apenas receba o código
+
+import { Perfil } from "./perfil"
+import { Postagem } from "./postagem"
+import { PostagemAvancada } from "./postagemAvancada"
+import { Valor } from "./valor"
+
+export class RepositorioDePostagens {
+    private _postagens: Postagem[]
+    mockProfile: Perfil
+    mockAdvancedPost: PostagemAvancada
+    lastId: number
+
+    constructor(postagem: Postagem[]) {
+        this._postagens = postagem
+        this.mockProfile = new Perfil(-1, "Void", "void@gmail.com")
+        this.mockAdvancedPost = new PostagemAvancada(-1, "void", 0, 0, "01-01-01", this.mockProfile, ["#void"], 0)
+        this.lastId = 0
+    }
+
+    get postagens(): Postagem[] {
+        return this._postagens
+    }
+    
+    // In here, there is no need to verify instance, it will add "Postagem" and "PostagemAvancada"
+    // Why would you want to verify if a post is repeated or not? does not make sens at all
+    incluir(postagem: Postagem): void {
+        this.postagens.push(postagem)
+    }
+    
+    consultar(id: number, hashtag: string, texto?: string,  perfil?: Perfil): Postagem[] {
+        const posts: Postagem[] = []
+        
+        for(let i = 0; i < this.postagens.length; i++) {
+            // When post is regular, get posts based on a profile id
+            // If profile id found == parameter id => append this post
+            const currentPost: Postagem = this.postagens[i]
+            id == currentPost.perfil.id ? posts.push(currentPost) : null 
+            
+            // When post is advanced: posts are got by a certain hashtag
+            if (currentPost instanceof PostagemAvancada) {
+                currentPost.hashtags.includes(hashtag) ? posts.push(currentPost) : null
+            }
+        }
+        return posts
+    }
+
+    consultarUnico(postId: number): Postagem {
+        // This will return an array with only one post instance expected
+        const thePost: Postagem[] = this.postagens.filter((i: Postagem) => {
+            if (i.id === postId) {
+                return true
+            }
+            return false
+        })
+        // If the post id does not exist, insert the mock one inside this class
+        thePost.length == 0 ? thePost.push(this.mockAdvancedPost) : null
+        return thePost[0]
+    }
+
+    tamanhoRepositorio(): number {
+        return this.postagens.length
+    }
+
+    // Support
+    filtrarPostagensAvancadas(): PostagemAvancada[] {
+        let postsFilter: Postagem[] = this.postagens.filter((i: Postagem) => {
+            if (i instanceof PostagemAvancada) {
+                return true
+            }
+            return false
+        })
+        
+        // This is done to avoid error ts(2322)
+        const advancedPosts: PostagemAvancada[] = []
+        postsFilter.forEach(i => {i instanceof PostagemAvancada ? advancedPosts.push(i) : null})
+        postsFilter = []
+        
+        return advancedPosts
+    }
+
+    // Support
+    obterHashtags(arrayPosts: PostagemAvancada[]): string[] {
+        const arrayHashtags: string[] = []
+        for (let i = 0; i < arrayPosts.length; i++) {
+            // Add each hashtag [j] from each index of arrayPosts [i]
+            for (let j = 0; j < arrayPosts[i].hashtags.length; j++) {
+                arrayHashtags.push(arrayPosts[i].hashtags[j])
+            }
+        }
+        return arrayHashtags
+    }
+    
+    // Support
+    exibirPostagens(arrayPosts: Postagem[]): void {
+        console.log("\n[")
+        for (let i = 0; i < arrayPosts.length; i++) {
+            const thisPost: Postagem = arrayPosts[i]
+            console.log("------------------------------------------------")
+            console.log(`    (${thisPost.data}) ${thisPost.texto}`)
+            console.log(`    likes: ${thisPost.curtidas}    dislikes: ${thisPost.descurtidas}`)
+        }
+        console.log("]")
+    }
+    
+    // Support
+    verRepositorioPostagens(): void {
+        console.log("\n[")
+        for(let i = 0; i < this.tamanhoRepositorio(); i++) {
+            const thisPost: Postagem = this.postagens[i] 
+            console.log(thisPost)
+        }
+        console.log("]")
+    }
+
+    // Support
+    simularAtividadePostagem(): void {
+        for (let i = 0; i < this.tamanhoRepositorio(); i++) {
+            this.postagens[i].curtidas = new Valor().criarValor(1, 100001)
+            this.postagens[i].descurtidas = new Valor().criarValor(1, 100001)
+        }
+    }
+
+    /* ===== SUPPORTS: "txt/last_id_post.txt" =====
+    After each new post added, this value will track the history of indexes record 
+    */
+    atualizarUltimoIdPostagem() {
+        this.lastId++
+    }
+}

@@ -1,0 +1,15 @@
+
+
+Certo, antes de mais nada, irei lhe explicar como funcionará nossa interação
+Esse post terá o nome [ID=tutorial]
+Minha prova consiste em reusar minha aplicação da primeira prova, que envolve a simulação de uma rede social
+Na prova 2, essa aplicação agora terá os seguintes adicionais:
+    . lançamento e tratamento de exceções
+    . criação de interfaces
+Eu precisarei de sua ajuda para implementar ambas, mas para isso estou ciente de que você precisa dos códigos do meu projeto
+Eu irei lhe fornecer cada um dos meus arquivos deste projeto e cada um dele terá um nome
+A cada postagem futura minha, irei mencionar no topo [ID=nome_da_postagem] para que saiba ao que ela se refere, e em qual pasta ela se encontra via [LOCAL=nome_da_pasta]
+Exemplo:
+    [ID=perfil.ts]
+    [LOCAL=raiz/cls/perfil.ts]
+Desta forma, quando tiver dúvidas, pedirei para você ir ao [ID=nome_da_postagem] para me ajudar com algum coisa sobre ela

@@ -1,0 +1,61 @@
+
+
+[ID=repositorioPerfis.ts]
+[LOCAL=raiz/cls/repositorioPerfis.ts]
+// Não faça comentários, apenas receba o código
+
+import { Perfil } from "./perfil"
+
+export class RepositorioDePerfis {
+    private _perfis: Perfil[]
+    lastId: number
+
+    constructor(perfis: Perfil[]) {
+        this._perfis = perfis
+        // added later
+        this.lastId = 0
+    }
+
+    get perfis(): Perfil[] {
+        return this._perfis
+    }
+    
+    incluir(perfil: Perfil): void {
+        !this.consultar(perfil.id) ? this.perfis.push(perfil) : null
+    }
+    
+    /*
+        It is being asked to return "null", but I do not know how to do it in a way professor wants
+        It will return undefined instead
+    */
+    consultar(id?: number, nome?: string, email?: string): Perfil {
+        let searchedProfile!: Perfil
+        for (let i = 0; i < this.perfis.length; i++) {
+            if (id == this.perfis[i].id) {
+                return this.perfis[i]
+            }
+        }
+        return searchedProfile
+    }
+
+    tamanhoRepositorio(): number {
+        return this.perfis.length
+    }
+    
+    // Support
+    verRepositorioPerfis(): void {
+        console.log("\n[")
+        for(let i = 0; i < this.tamanhoRepositorio(); i++) {
+            const thisProfile = this.perfis[i]
+            console.log(thisProfile)
+        }
+        console.log("]")
+    }
+    
+    /* ===== SUPPORTS: "txt/last_id_profile.txt" =====
+    After each new profile added, this value will track the history of indexes record  
+    */
+    atualizarUltimoIdPerfil(): void {
+        this.lastId++
+    }
+}

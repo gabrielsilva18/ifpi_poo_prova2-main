@@ -1,0 +1,22 @@
+
+
+[FEITO] add exceções em "case 1": incluirPerfil
+
+case 1 -> incluirPerfil (app.ts) -> incluirPerfil (redeSocial.ts) -> incluir (repositorioPerfis.ts) 
+Foi adicionado [try, catch] em: incluir (repositorioPerfil.ts) 
+O código antigo está comentado
+
+[FEITO] add exceções em "case 2": consultarPerfil
+case 2 -> consultarPerfil (app.ts) -> consultar (repositorioPerfis.ts)
+Não foi adicionado exceção nem [try, catch], pois incluir (repositorioPerfis.ts) faz o tratamento
+O código não foi alterado
+
+
+
+
+[NÃO FEITO]
+    . Tratamentos precisos para entrada numéricas
+    . Tratamentos precisos p/ texto
+    . Tratamentos precisos p/ email
+    . Tratamentos precisos p/ data de nascimento
+    . "Case 3": [postType: string, today: string (data)]

@@ -1,0 +1,37 @@
+
+
+[ID=file.ts]
+[LOCAL=raiz/cls/file.ts]
+// Classe com métodos auxiliares que servem "app.ts"
+// Ela interage com outros arquivos além da pasta "cls"
+// Ela serve como banco de dados em forma de texto (até este momento)
+// Não faça comentários, apenas receba o código
+
+import * as manager from "fs-extra"
+
+export class File {
+    osPath: string
+    private _content: string
+    
+    constructor(osPath: string, content: string) {
+        this.osPath = osPath
+        this._content = content
+    }
+
+    get content(): string {
+        return this._content
+    }
+
+    set content(newValue: string) {
+        this._content = newValue
+    }
+    write(): void {
+        manager.writeFileSync(this.osPath, this.content, "utf8")
+    }
+    append(): void {
+        manager.appendFileSync(this.osPath, this.content, "utf8")
+    }
+    read(): string {
+        return manager.readFileSync(this.osPath, "utf8")
+    }
+}

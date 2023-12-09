@@ -1,0 +1,6 @@
+
+
+// No "catch" de cada bloco try, usar a função "this.teclarEnter()", para conseguir ver a exceção sendo lançada
+// Nas funções de origem, lançar apenas o erro (importado de algum arquivo contendo somente as excessões)
+// Nas funções chamadoras, criar um [try, catch], onde as excessões lançadas são tratadas
+// Para isso, chamar todas as exceções em um único local para que qualquer uma delas seja chamada no momento oportuno
