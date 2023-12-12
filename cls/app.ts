@@ -140,37 +140,35 @@ export class App {
 
     // To be used before algorithm start
     recuperarRepositorioPostagens(): void {
-        const postsData = this.postsTxt.read().split("\n")
+        const postsData = this.postsTxt.read().split("\n");
         for (let i = 0; i < postsData.length; i++) {
-            // There is an empty line after appending rows, so this is required
             if (postsData[i] != "") {
-                const p: string[] = postsData[i].split(";")
-                const profileId: number = Number(p[5])
-                const profileExists: Perfil = this.redeSocial.consultarPerfil(profileId, "void", "void");
+                const p: string[] = postsData[i].split(";");
+                const profileId: number = Number(p[5]);
                 
-                // If the id collected in the row actually belongs to a user
+                // Modificação aqui: Verifica se o perfil existe antes de tentar atribuir
+                const profileExists: Perfil | null = this.redeSocial.consultarPerfil(profileId, "void", "void");
+    
                 if (profileExists) {
-                    // Regular post
                     if (p.length == 6) {
                         const retrievedPost: Postagem = new Postagem(
                             Number(p[0]), p[1], Number(p[2]), Number(p[3]), p[4], profileExists
-                        )
-                        this.redeSocial.incluirPostagem(retrievedPost)
+                        );
+                        this.redeSocial.incluirPostagem(retrievedPost);
                     }
-                    // Advanced post
                     if (p.length > 6) {
-                        const hashtagFromRowToArray: string[] = p[6].split(",")
+                        const hashtagFromRowToArray: string[] = p[6].split(",");
                         const retrievedPost: PostagemAvancada = new PostagemAvancada(
                             Number(p[0]), p[1], Number(p[2]), Number(p[3]), p[4], profileExists,
                             hashtagFromRowToArray, Number(p[7])
-                        )
-                        this.redeSocial.incluirPostagem(retrievedPost)
+                        );
+                        this.redeSocial.incluirPostagem(retrievedPost);
                     }
                 }
             }
         }
     }
-
+    
     menu(): string {
         return `
         ===== REDE SOCIAL =====
@@ -403,85 +401,98 @@ export class App {
     }
     
     // case 2
-    consultarPerfil(): void {
-        try {
-            const profileId: number = this.requisitarEntradaNumero("Informe o id do perfil >>> ")
-            // Exceção aqui
-            const query: IPerfil = this.redeSocial.repPerfis.consultar(profileId)
-            console.log(`{ id: ${query.id} nome: ${query.nome} email: ${query.email} }`)
-            this.teclarEnter()
+consultarPerfil(): void {
+    try {
+        const profileId: number = this.requisitarEntradaNumero("Informe o id do perfil >>> ");
+        // Exceção aqui
+        const query: IPerfilCompleto | null = this.redeSocial.repPerfis.consultar(profileId);
+
+        if (query !== null && query !== undefined) {
+            console.log(`{ id: ${query.id} nome: ${query.nome} email: ${query.email} }`);
+        } else {
+            console.log("Perfil não encontrado");
         }
-        catch(err: any) {
-            new self.Excecao().excecao(err)
-            this.teclarEnter()
-        }
+
+        this.teclarEnter();
+    } catch (err: any) {
+        new self.Excecao().excecao(err);
+        this.teclarEnter();
     }
-    
-    // case 3 
-    incluirPostagem(): void {
-        try {
-            let postType: string
-            let today: string
-            let profileId: number
-            let text: string
-            let hashtag: string
-            let profileHashtags: string[] = []
-            let views: number
-            let hashtagsAmount: number
-            
-            do {
-                postType = this.requisitarEntrada("Informe o tipo da postagem (1 ou 2)")
-            } while (postType !== "1" && postType !== "2")
+}
+// Case 3
+incluirPostagem(): void {
+    try {
+        let postType: string;
+        let today: string;
+        let profileId: number;
+        let text: string;
+        let hashtag: string;
+        let profileHashtags: string[] = [];
+        let views: number;
+        let hashtagsAmount: number;
 
-            do {
-                today = this.requisitarEntrada("Informe a data da postagem (ex: 2023-01-01)")
-            } while (!(this.redeSocial.tratarDadosData(today, "-")))
-            
-            profileId = this.requisitarEntradaNumero("Informe o id do perfil")
-            const profile: IPerfil = this.redeSocial.repPerfis.consultar(profileId);
+        do {
+            postType = this.requisitarEntrada("Informe o tipo da postagem (1 ou 2)");
+        } while (postType !== "1" && postType !== "2");
+
+        do {
+            today = this.requisitarEntrada("Informe a data da postagem (ex: 2023-01-01)");
+        } while (!(this.redeSocial.tratarDadosData(today, "-")));
+
+        profileId = this.requisitarEntradaNumero("Informe o id do perfil");
+        const profile: IPerfilCompleto | null = this.redeSocial.repPerfis.consultar(profileId);
+
+        if (profile !== null && profile !== undefined) {
             const profileExists: Perfil = new Perfil(profile.id, profile.nome, profile.email);
+            text = this.requisitarEntrada("Informe o texto da postagem");
 
-            text = this.requisitarEntrada("Informe o texto da postagem")
-            
             if (postType === "1") {
                 const newPost: Postagem = new Postagem(this.redeSocial.repPosts.lastId, text, 0, 0, today, profileExists);
-                
+
                 // Contêm exceção
-                this.redeSocial.incluirPostagem(newPost)
-                this.teclarEnter()
-            }
-            
-            else if (postType === "2") {
-                views = this.requisitarEntradaNumero("Informe a qtd. de views")
-                hashtagsAmount = this.requisitarEntradaNumero("Informe a quantidade de hashtags")
-                
+                this.redeSocial.incluirPostagem(newPost);
+                this.teclarEnter();
+            } else if (postType === "2") {
+                views = this.requisitarEntradaNumero("Informe a qtd. de views");
+                hashtagsAmount = this.requisitarEntradaNumero("Informe a quantidade de hashtags");
+
                 const newPost: PostagemAvancada = new PostagemAvancada(
-                    this.redeSocial.repPosts.lastId, 
-                    text, 0, 0, today, profileExists, profileHashtags, views
-                )
+                    this.redeSocial.repPosts.lastId,
+                    text,
+                    0,
+                    0,
+                    today,
+                    profileExists,
+                    profileHashtags,
+                    views
+                );
 
                 for (let i = 0; i < hashtagsAmount; i++) {
-                    hashtag = this.requisitarEntrada(`Nome da ${i + 1}a hashtag (não incluir #)`)
-                    newPost.addHashtag()
-                    newPost.hashtags.push("#" + hashtag)
+                    hashtag = this.requisitarEntrada(`Nome da ${i + 1}a hashtag (não incluir #)`);
+                    newPost.addHashtag();
+                    newPost.hashtags.push("#" + hashtag);
                 }
-                
+
                 // Contêm exceção
-                newPost.addHashtag()
-                this.redeSocial.incluirPostagem(newPost)
-                this.teclarEnter()
+                newPost.addHashtag();
+                this.redeSocial.incluirPostagem(newPost);
+                this.teclarEnter();
             }
 
-            this.redeSocial.repPosts.atualizarUltimoIdPostagem()
-            console.log("\nAVISO: Postagem criada...")
-            this.teclarEnter()
+            this.redeSocial.repPosts.atualizarUltimoIdPostagem();
+            console.log("\nAVISO: Postagem criada...");
+            this.teclarEnter();
+        } else {
+            console.log("Perfil não encontrado");
+            // Trate a situação em que o perfil não é encontrado, se necessário.
         }
-        catch (err: any) {
-            console.log("catch")
-            new self.Excecao().excecao(err)
-            this.teclarEnter()
-        }
+    } catch (err: any) {
+        console.log("catch");
+        new self.Excecao().excecao(err);
+        this.teclarEnter();
     }
+}
+
 
     // Case 4
     consultarPostagem(): void {
@@ -564,67 +575,84 @@ export class App {
     }
     
     // Case 7
-    decrementarVisualizacoes(): void {
-        try {
-            // Motores de busca
-            let profileId: number
-            let hashtag: string
-            
-            // Tipo da busca
-            let searchType: string
+   // Case 7
+decrementarVisualizacoes(): void {
+    try {
+        // Motores de busca
+        let profileId: number;
+        let hashtag: string;
 
-            // Armazenamento da busca
-            let query: PostagemAvancada[]
-            
-            do {
-                searchType = this.requisitarEntrada("Informe a forma de busca:\n1. id do perfil\n2. hashtag")
-            } while(searchType !== "1" && searchType !== "2")
-            
-            // Postagens capturadas via id de perfil
-            if (searchType === "1") {
-                profileId = this.requisitarEntradaNumero("Informe o id do perfil")
-                query = this.redeSocial.consultarPostagensPorPerfil(profileId)
-            }
-            
-            // Postagens capturadas via hashtag
-            else {
-                hashtag = this.requisitarEntrada("Informe a hashtag (incluir #)")
-                query = this.redeSocial.consultarPostagensPorHashtag(hashtag)
-            }
+        // Tipo da busca
+        let searchType: string;
 
-            console.log("\nAVISO: Postagens encontradas")
-            this.redeSocial.repPosts.exibirPostagens(query)
-            // Retirar views após exibir
-            this.redeSocial.decrementarVisualizacoesMultiplas(query)
-            this.teclarEnter()
+        // Armazenamento da busca
+        let query: PostagemAvancada[];
+
+        do {
+            searchType = this.requisitarEntrada("Informe a forma de busca:\n1. id do perfil\n2. hashtag");
+        } while (searchType !== "1" && searchType !== "2");
+
+        // Postagens capturadas via id de perfil
+        if (searchType === "1") {
+            profileId = this.requisitarEntradaNumero("Informe o id do perfil");
+            const profile = this.redeSocial.repPerfis.consultar(profileId);
             
-        } catch (err: any) {
-            new self.Excecao().excecao(err)
-            console.log("catch...")
-            this.teclarEnter()
+            // Verificando se o perfil foi encontrado
+            if (profile !== null && profile !== undefined) {
+                query = this.redeSocial.consultarPostagensPorPerfil(profileId);
+                console.log("\nAVISO: Postagens encontradas");
+                this.redeSocial.repPosts.exibirPostagens(query);
+                // Retirar views após exibir
+                this.redeSocial.decrementarVisualizacoesMultiplas(query);
+                this.teclarEnter();
+            } else {
+                console.log("Perfil não encontrado");
+            }
         }
+
+        // Postagens capturadas via hashtag
+        else {
+            hashtag = this.requisitarEntrada("Informe a hashtag (incluir #)");
+            query = this.redeSocial.consultarPostagensPorHashtag(hashtag);
+            console.log("\nAVISO: Postagens encontradas");
+            this.redeSocial.repPosts.exibirPostagens(query);
+            // Retirar views após exibir
+            this.redeSocial.decrementarVisualizacoesMultiplas(query);
+            this.teclarEnter();
+        }
+    } catch (err: any) {
+        new self.Excecao().excecao(err);
+        console.log("catch...");
+        this.teclarEnter();
     }
+}
 
-    // Case 8
-    exibirPostagensPorPerfil(): void {
-        try {
-            const profileId: number = this.requisitarEntradaNumero("Informe o id do perfil")
+// Case 8
+exibirPostagensPorPerfil(): void {
+    try {
+        const profileId: number = this.requisitarEntradaNumero("Informe o id do perfil");
 
-            // Exceção aqui
-            const profile: IPerfil = this.redeSocial.repPerfis.consultar(profileId)
-            this.requisitarEntrada(`Pessoa encontrada: ${profile.nome} (ver postagens = aperte ENTER)`, true)
+        // Exceção aqui
+        const profile = this.redeSocial.repPerfis.consultar(profileId);
+        
+        // Verificando se o perfil foi encontrado
+        if (profile !== null && profile !== undefined) {
+            this.requisitarEntrada(`Pessoa encontrada: ${profile.nome} (ver postagens = aperte ENTER)`, true);
 
             // Aqui têm exceção: PerfilSemPostagemError
-            const postsFound: Postagem[] = this.redeSocial.exibirPostagensPorPerfil(profileId)
-            this.redeSocial.repPosts.exibirPostagens(postsFound)
-            this.redeSocial.decrementarVisualizacoesPostagensAvancadas(postsFound)
-            this.teclarEnter()
+            const postsFound: Postagem[] = this.redeSocial.exibirPostagensPorPerfil(profileId);
+            this.redeSocial.repPosts.exibirPostagens(postsFound);
+            this.redeSocial.decrementarVisualizacoesPostagensAvancadas(postsFound);
+            this.teclarEnter();
+        } else {
+            console.log("Perfil não encontrado");
         }
-        catch (err: any) {
-            new self.Excecao().excecao(err)
-            this.teclarEnter() 
-        }
+    } catch (err: any) {
+        new self.Excecao().excecao(err);
+        this.teclarEnter(); 
     }
+}
+
 
     // Case 9
     exibirPostagensPorHashtag(): void {

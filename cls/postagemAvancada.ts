@@ -5,6 +5,7 @@ import {
     HashtagSemSentidoError, HashtagTemSimboloError, HashtagVaziaError 
 } from "./excecoes";
 
+// Definindo a interface IPostagemAvancada que descreve a estrutura avançada de uma postagem
 interface IPostagemAvancada {
     hashtags: string[];
     visualizacoesRestantes: number;
@@ -22,7 +23,7 @@ interface IPostagemAvancada {
     decrementarVisualizacoes(): void;
 }
 
-
+// Definindo a interface IConsultasPostagens que descreve métodos para consultar postagens
 interface IConsultasPostagens {
     consultar(id: number, hashtag: string, texto?: string, perfil?: Perfil): Postagem[];
     consultarUnico(postId: number): Postagem;
@@ -30,10 +31,12 @@ interface IConsultasPostagens {
     consultarPorHashtag(hashtag: string): PostagemAvancada[];
 }
 
+//Implementação da classe PostagemAvancada que herda de Postagem e implementa as interfaces
 export class PostagemAvancada extends Postagem implements IPostagemAvancada{
     private _hashtags: string[];
     private _visualizacoesRestantes: number;
 
+     // Construtor da classe que chama o construtor da classe base (superclasse)
     constructor(
         id: number, texto: string, curtidas: number, descurtidas: number, data: string, perfil: Perfil,
         hashtags: string[], visualizacoesRestantes: number
@@ -42,6 +45,7 @@ export class PostagemAvancada extends Postagem implements IPostagemAvancada{
         this._hashtags = hashtags;
         this._visualizacoesRestantes = visualizacoesRestantes;
     }
+    // Métodos de acesso para as propriedades
     get hashtags(): string[] {
         return this._hashtags
     }
@@ -54,6 +58,7 @@ export class PostagemAvancada extends Postagem implements IPostagemAvancada{
         this._visualizacoesRestantes = newValue
     }
 
+    // Métodos da interface IPostagemAvancada
     existeHashtag(hashtag: string): boolean {
         return this.hashtags.includes(hashtag) ? true : false
         // if (this.hashtags.includes(hashtag)) {

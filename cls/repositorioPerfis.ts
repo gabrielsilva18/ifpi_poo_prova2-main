@@ -1,23 +1,25 @@
+// Importando exceção necessária
+import { PerfilInexistenteError } from "./excecoes";
 
-
-import { PerfilInexistenteError } from "./excecoes"
-// iPerfil.ts
-// perfil.ts
+// Definindo a interface IPerfil que representa a estrutura básica de um perfil
 export interface IPerfil {
   id: number;
   nome: string;
   email: string;
 }
+
+// Definindo a interface IPerfilCompleto que estende IPerfil e adiciona métodos
 export interface IPerfilCompleto extends IPerfil {
   getId(): number;
   getNome(): string;
   getEmail(): string;
 }
 
-
+// Implementação da classe Perfil que implementa a interface IPerfilCompleto
 export class Perfil implements IPerfilCompleto {
   constructor(public id: number, public nome: string, public email: string) {}
 
+  // Implementação dos métodos da interface IPerfilCompleto
   getId(): number {
       return this.id;
   }
@@ -31,55 +33,54 @@ export class Perfil implements IPerfilCompleto {
   }
 }
 
-
-// repositorioDePerfis.ts
+// Definindo a interface IRepositorioDePerfis que especifica operações em um repositório de perfis
 export interface IRepositorioDePerfis {
-  incluir(perfil: IPerfil): void;
-  consultar(id?: number, nome?: string, email?: string): IPerfil;
+  incluir(perfil: IPerfilCompleto): void;
+  consultar(id?: number, nome?: string, email?: string): IPerfilCompleto | null;
   tamanhoRepositorio(): number;
   verRepositorioPerfis(): void;
   atualizarUltimoIdPerfil(): void;
 }
 
+// Implementação da classe RepositorioDePerfis que implementa a interface IRepositorioDePerfis
 export class RepositorioDePerfis implements IRepositorioDePerfis {
   private _perfis: IPerfilCompleto[]; // Use IPerfilCompleto para incluir métodos getId(), getNome(), getEmail()
   lastId: number;
 
   constructor(perfis: IPerfilCompleto[]) {
-      this._perfis = perfis;
-      this.lastId = 0;
+    this._perfis = perfis;
+    this.lastId = 0;
   }
 
+  // Métodos da interface IRepositorioDePerfis
   get perfis(): IPerfilCompleto[] {
-      return this._perfis;
+    return this._perfis;
   }
 
   incluir(perfil: IPerfilCompleto): void {
-      this.perfis.push(perfil);
+    this.perfis.push(perfil);
   }
 
-  consultar(id?: number, nome?: string, email?: string): IPerfilCompleto {
-      for (let i = 0; i < this.perfis.length; i++) {
-          if (id == this.perfis[i].getId()) {
-              return this.perfis[i];
-          }
-      }
-      throw new PerfilInexistenteError("\nERRO: Perfil não encontrado... [repositorioPers.ts/consultar]");
+  consultar(id?: number, nome?: string, email?: string): IPerfilCompleto | null {
+    const perfilEncontrado = this.perfis.find(perfil => perfil.getId() === id);
+    return perfilEncontrado || null;
+    
   }
+
   tamanhoRepositorio(): number {
-      return this.perfis.length;
+    return this.perfis.length;
   }
 
   verRepositorioPerfis(): void {
-      console.log("\n[");
-      for (let i = 0; i < this.tamanhoRepositorio(); i++) {
-          const thisProfile = this.perfis[i];
-          console.log(thisProfile);
-      }
-      console.log("]");
+    console.log("\n[");
+    for (let i = 0; i < this.tamanhoRepositorio(); i++) {
+      const thisProfile = this.perfis[i];
+      console.log(thisProfile);
+    }
+    console.log("]");
   }
 
   atualizarUltimoIdPerfil(): void {
-      this.lastId++;
+    this.lastId++;
   }
 }

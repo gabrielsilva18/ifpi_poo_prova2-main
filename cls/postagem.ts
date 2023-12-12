@@ -1,5 +1,7 @@
+// Importando a interface IPerfil do arquivo perfil.ts
 import { IPerfil } from "./perfil";
 
+// Definindo a interface IPostagem que descreve a estrutura de uma postagem
 export interface IPostagem {
     id: number;
     texto: string;
@@ -9,6 +11,7 @@ export interface IPostagem {
     perfil: IPerfil;
 }
 
+// Definindo a interface IPopularidade que descreve métodos relacionados à popularidade
 export interface IPopularidade {
     curtir(): void;
     descurtir(): void;
@@ -16,7 +19,9 @@ export interface IPopularidade {
     ehPopularPorcentagem(): number;
 }
 
+// Implementação da classe Postagem que implementa as interfaces IPostagem e IPopularidade
 export class Postagem implements IPostagem, IPopularidade {
+    // Propriedades privadas da classe
     private _id: number;
     private _texto: string;
     private _curtidas: number;
@@ -24,6 +29,7 @@ export class Postagem implements IPostagem, IPopularidade {
     private _data: string;
     private _perfil: IPerfil;
 
+    // Construtor da classe que inicializa as propriedades
     constructor(id: number, texto: string, curtidas: number, descurtidas: number, data: string, perfil: IPerfil) {
         this._id = id;
         this._texto = texto;
@@ -33,6 +39,7 @@ export class Postagem implements IPostagem, IPopularidade {
         this._perfil = perfil;
     } 
 
+    // Métodos de acesso para as propriedades
     get id(): number {
         return this._id;
     }
@@ -69,6 +76,7 @@ export class Postagem implements IPostagem, IPopularidade {
         return this._perfil;
     }
 
+    // Métodos da interface IPopularidade
     curtir(): void {
         this.curtidas++;
     }

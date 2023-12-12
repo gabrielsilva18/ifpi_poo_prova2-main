@@ -34,11 +34,11 @@ incluirPerfil(perfil: IPerfilCompleto): void {
     (<RepositorioDePerfis>this.repPerfis).incluir(perfilCompleto);
 }
 
-
-consultarPerfil(id: number, nome: string, email: string): IPerfilCompleto {
+consultarPerfil(id: number, nome: string, email: string): IPerfilCompleto | null {
     const perfilConsultado = (<RepositorioDePerfis>this.repPerfis).consultar(id);
     return perfilConsultado;
 }
+
 
     
     // I think it would be better if this function had return "number" (but I am not allowed to change)

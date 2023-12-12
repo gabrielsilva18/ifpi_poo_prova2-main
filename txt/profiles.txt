@@ -13,5 +13,4 @@
 12;Edu;edu@gmail.com
 13;Marx;marx@gmail.com
 14;Argos;argos@gmail.com
-15;GAEL;gaellealmaio12@gmail.com
-16;gabriel;silvagx@gmail.com
+15;gabriel;soufodao@gmail.com
